@@ -11,7 +11,7 @@ const cors = require("cors");
 const TRIPADVISOR_API_KEY = process.env.TRIPADVISOR_API_KEY;
 const WHITE_LIST = ["https://viator-done-right.et.r.appspot.com", "http://localhost:5000"];
 const corsOptions = {
-  origin: function (origin, callback) {
+  origin: (origin, callback) => {
     if (origin === undefined || WHITE_LIST.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -20,7 +20,7 @@ const corsOptions = {
   }
 }
 
-app.options("/*", function (req, res, next) {
+app.options("/*", (req, res, next) => {
   var origin = req.get("origin");
   if (origin) {
     if (WHITE_LIST.includes(origin)) {
@@ -35,7 +35,7 @@ app.options("/*", function (req, res, next) {
   }
 });
 
-app.post("/viator/suggest", jsonParser, cors(corsOptions), function (req, res, next) {
+app.post("/viator/suggest", jsonParser, cors(corsOptions), (req, res, next) => {
   let data = req.body;
   const config = {
     method: "POST",
@@ -55,13 +55,13 @@ app.post("/viator/suggest", jsonParser, cors(corsOptions), function (req, res, n
 });
 
 async function findLocation(locationId) {
-  return axios.get("http://api.tripadvisor.com/api/partner/2.0/location/" + locationId + "?key=" + TRIPADVISOR_API_KEY).then(function (resp) {
+  return axios.get("http://api.tripadvisor.com/api/partner/2.0/location/" + locationId + "?key=" + TRIPADVISOR_API_KEY).then((resp) => {
     let data = resp.data;
     if (data.latitude != "0.0" && data.longitude != "0.0") {
       return { lat: data.latitude, lng: data.longitude };
     } else if (data.ancestors) {
       let location = null;
-      data.ancestors.find(function (ancestor) {
+      data.ancestors.find((ancestor) => {
         location = findLocation(ancestor.location_id);
         return location;
       });
@@ -72,10 +72,10 @@ async function findLocation(locationId) {
   });
 }
 
-app.post("/viator/details", jsonParser, cors(corsOptions), function (req, res, next) {
+app.post("/viator/details", jsonParser, cors(corsOptions), (req, res, next) => {
   let data = req.body;
   axios.get("https://supplier.viator.com/location/detail/" + data.providerReference + "?language=en&bypassCache=false")
-    .then(async function (resp1) {
+    .then(async (resp1) => {
       if (resp1.data.tripAdvisorUrl) {
         let result = { "url": resp1.data.tripAdvisorUrl };
         if (resp1.data.centre) {
