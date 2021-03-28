@@ -83,7 +83,6 @@ app.post("/viator/details", jsonParser, cors(corsOptions), (req, res, next) => {
           res.json(result);
         } else if (resp1.data.tripAdvisorLocationId) {
           let location = await findLocation(resp1.data.tripAdvisorLocationId);
-          console.log(location);
           if (location) {
             result.location = location;
           }
